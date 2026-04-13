@@ -8,15 +8,16 @@
     "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {
-    "vue": "^3.5.22",
-    "element-plus": "^2.11.2"
+    "element-plus": "^2.11.2",
+    "highlight.js": "^11.11.1",
+    "vue": "^3.5.22"
   },
   "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.4",
+    "@vue/compiler-sfc": "^3.5.22",
     "eslint": "^8.57.1",
     "eslint-plugin-vue": "^9.33.0",
-    "@vue/compiler-sfc": "^3.5.22",
-    "vite": "^5.4.19",
-    "@vitejs/plugin-vue": "^5.2.4"
+    "vite": "^5.4.19"
   },
   "eslintConfig": {
     "root": true,
