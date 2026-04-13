@@ -80,7 +80,7 @@ export default {
   font-size: 17px;
 
   vertical-align: top;
-  background: url(~@/assets/images/xh.png) no-repeat left center;
+  background: url('@/assets/images/xh.png') no-repeat left center;
   background-size: contain;
 }
 </style>
