@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="msg-type-fields">
     <el-form-item label="Message Type" style="margin: 0">
       <el-tag>custom_msgs/ReadLkMotor</el-tag>
     </el-form-item>
