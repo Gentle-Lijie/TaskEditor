@@ -1,6 +1,7 @@
 <template>
   <div id="app">
-    <el-page-header content="University of Nottingham EtherCAT Module Configuration" style="margin-bottom: 10px;"/>
+    <h2 style="margin-bottom: 10px; font-size: 18px; font-weight: bold;">University of Nottingham EtherCAT Module
+      Configuration</h2>
     <el-tabs v-model="activeName" :before-leave="call_update" stretch>
       <el-tab-pane label="Module Settings" name="assignment">
         <module-settings/>

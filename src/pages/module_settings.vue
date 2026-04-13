@@ -13,36 +13,38 @@
       <el-table
           :data="modules"
           border
-          style="width: 100%">
+          style="width: 100%"
+          row-key="_uid">
 
         <el-table-column type="expand">
           <template #default="props">
             <div>
               <div class="text item with_margin_bottom" style="margin: 30px">
                 <el-divider content-position="left">Add Task</el-divider>
-                <el-button @click="props.row.task.push(deepClone(examples.djirc))">DJI RC</el-button>
-                <el-button @click="props.row.task.push(deepClone(examples.sbus_rc))">SBUS RC</el-button>
-                <el-button @click="props.row.task.push(deepClone(examples.hipnucimu_can))">HIPNUC IMU(CAN)</el-button>
-                <el-button @click="props.row.task.push(deepClone(examples.super_cap))">SUPER CAP(CAN)</el-button>
-                <el-button @click="props.row.task.push(deepClone(examples.ms5837_30ba))">MS5837(30BA)</el-button>
-                <!--                <el-button @click="props.row.task.push(deepClone(examples.adc))">OnBoard ADC *UNTESTED</el-button>-->
-                <el-button @click="props.row.task.push(deepClone(examples.can_pmu))">PMU(CAN)</el-button>
+                <el-button @click="addTask(props.row.task, examples.djirc)">DJI RC</el-button>
+                <el-button @click="addTask(props.row.task, examples.sbus_rc)">SBUS RC</el-button>
+                <el-button @click="addTask(props.row.task, examples.hipnucimu_can)">HIPNUC IMU(CAN)</el-button>
+                <el-button @click="addTask(props.row.task, examples.super_cap)">SUPER CAP(CAN)</el-button>
+                <el-button @click="addTask(props.row.task, examples.ms5837_30ba)">MS5837(30BA)</el-button>
+                <!--                <el-button @click="addTask(props.row.task, examples.adc)">OnBoard ADC *UNTESTED</el-button>-->
+                <el-button @click="addTask(props.row.task, examples.can_pmu)">PMU(CAN)</el-button>
 
                 <el-divider direction="vertical"/>
-                <el-button @click="props.row.task.push(deepClone(examples.djican))">DJI Motor</el-button>
-                <el-button @click="props.row.task.push(deepClone(examples.dm_motor))">DM Motor</el-button>
-                <el-button @click="props.row.task.push(deepClone(examples.lktech))">LkTech Motor</el-button>
+                <el-button @click="addTask(props.row.task, examples.djican)">DJI Motor</el-button>
+                <el-button @click="addTask(props.row.task, examples.dm_motor)">DM Motor</el-button>
+                <el-button @click="addTask(props.row.task, examples.lktech)">LkTech Motor</el-button>
 
-                <el-button @click="props.row.task.push(deepClone(examples.dshot))">DSHOT600</el-button>
-                <el-button @click="props.row.task.push(deepClone(examples.vanilla_pwm))">OnBoard PWM</el-button>
+                <el-button @click="addTask(props.row.task, examples.dshot)">DSHOT600</el-button>
+                <el-button @click="addTask(props.row.task, examples.vanilla_pwm)">OnBoard PWM</el-button>
 
-                <el-button @click="props.row.task.push(deepClone(examples.external_pwm))">ExternalBoard PWM</el-button>
+                <el-button @click="addTask(props.row.task, examples.external_pwm)">ExternalBoard PWM</el-button>
 
                 <el-divider content-position="left">Module Task Detail Configuration</el-divider>
                 <el-table
                     :data="props.row.task"
                     border
-                    style="width: 100%">
+                    style="width: 100%"
+                    row-key="_uid">
 
                   <el-table-column type="expand">
                     <template #default="props2">
@@ -709,6 +711,9 @@
             label="Module SN">
           <template #default="props">
             <el-input v-model="props.row.sn" @input="(val) => {props.row.latency_topic = `/ecat/sn${val}/latency`}"/>
+            <el-alert v-if="props.row.sn && props.row.sn.toLowerCase().startsWith('sn')"
+              title="Will auto prepend sn to topic" type="warning" :closable="false" style="margin-top: 5px;"
+              show-icon />
           </template>
         </el-table-column>
 
@@ -994,14 +999,31 @@ export default {
       deep: true
     }
   },
+  created() {
+    this._uidCounter = 0;
+  },
   mounted() {
     if (localStorage.getItem("modules_info") != null) {
       this.modules = JSON.parse(localStorage.getItem("modules_info"));
+      // Ensure _uid exists for modules and tasks loaded from localStorage
+      this.modules.forEach(mod => {
+        if (mod._uid === undefined) mod._uid = this._uidCounter++;
+        if (mod.task) {
+          mod.task.forEach(t => {
+            if (t._uid === undefined) t._uid = this._uidCounter++;
+          });
+        }
+      });
     }
   },
   methods: {
     addModule(type) {
-      this.modules.push({type, task: [], latency_topic: '', sn: ''});
+      this.modules.push({type, task: [], latency_topic: '', sn: '', _uid: this._uidCounter++});
+    },
+    addTask(taskList, example) {
+      const cloned = this.deepClone(example);
+      cloned._uid = this._uidCounter++;
+      taskList.push(cloned);
     },
     getTypeFriendlyName(hexId) {
       switch (hexId) {
