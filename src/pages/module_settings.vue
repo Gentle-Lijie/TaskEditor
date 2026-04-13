@@ -1,16 +1,7 @@
 <template>
   <div>
     <el-divider><span>Add Module</span></el-divider>
-    <div style="text-align: center">
-      <!-- deprecated -->
-      <!--      <el-button @click="modules.push({type: 0x01, task: []})">Flight Module</el-button>-->
-      <!--      <el-button @click="modules.push({type: 0x02, task: [], latency_topic: '', sn: ''})" disabled>Motor Module</el-button>-->
-      <el-button @click="modules.push({type: 0x03, task: [], latency_topic: '', sn: ''})">H750 Universal Module
-      </el-button>
-      <el-button @click="modules.push({type: 0x04, task: [], latency_topic: '', sn: ''})">H750 Universal Module (Large
-        PDO V.)
-      </el-button>
-    </div>
+    <module-add-buttons @add-module="addModule"/>
 
     <el-divider>
       <span>
@@ -25,7 +16,7 @@
           style="width: 100%">
 
         <el-table-column type="expand">
-          <template slot-scope="props">
+          <template #default="props">
             <div>
               <div class="text item with_margin_bottom" style="margin: 30px">
                 <el-divider content-position="left">Add Task</el-divider>
@@ -54,7 +45,7 @@
                     style="width: 100%">
 
                   <el-table-column type="expand">
-                    <template slot-scope="props2">
+                    <template #default="props2">
 
                       <!-- DJI RC -->
                       <div v-if="props2.row.type === 1">
@@ -97,7 +88,7 @@
                                 style="margin-bottom: 20px;"
                                 type="info"
                             >
-                              <template slot="title">
+                              <template #title>
                                 If you are using broadcast mode, ignore this column as the driver ID will be fixed to
                                 1-4 in this mode.
                               </template>
@@ -113,7 +104,7 @@
                                 style="margin-bottom: 20px;"
                                 type="info"
                             >
-                              <template slot="title">
+                              <template #title>
                                 More information about LkTech Motor Protocol can be cound at <a
                                   href="http://www.lkmotor.cn/Download.aspx?ClassID=47">http://www.lkmotor.cn/Download.aspx?ClassID=47</a>
                               </template>
@@ -310,7 +301,7 @@
                                 style="margin-bottom: 20px;"
                                 type="info"
                             >
-                              <template slot="title">
+                              <template #title>
                                 More information about DJI Motor Protocol can be cound at <a
                                   href="https://www.robomaster.com/zh-CN/products/components/general">https://www.robomaster.com/zh-CN/products/components/general</a>
                               </template>
@@ -595,7 +586,7 @@
                                 style="margin-bottom: 20px;"
                                 type="info"
                             >
-                              <template slot="title">
+                              <template #title>
                                 More information about DM Motor Protocol can be cound at <a
                                   href="https://gl1po2nscb.feishu.cn/wiki/MZ32w0qnnizTpOkNvAZcJ9SlnXb">https://gl1po2nscb.feishu.cn/wiki/MZ32w0qnnizTpOkNvAZcJ9SlnXb</a>
                               </template>
@@ -614,7 +605,7 @@
                                 style="margin-bottom: 5px;"
                                 type="info"
                             >
-                              <template slot="title">
+                              <template #title>
                                 Please set the <u><b>PMax</b></u> to <u><b>PI</b></u> using the DMTools software for
                                 best ecd accuracy.
                               </template>
@@ -690,14 +681,14 @@
 
                   <el-table-column
                       label="Task Type">
-                    <template slot-scope="props2">
+                    <template #default="props2">
                       {{ getAppTypeFriendlyName(props2.row.type) }}
                     </template>
                   </el-table-column>
 
                   <el-table-column
                       label="Operations">
-                    <template slot-scope="props2">
+                    <template #default="props2">
                       <el-button @click="props.row.task.splice(props2.$index, 1)">Remove</el-button>
                     </template>
                   </el-table-column>
@@ -709,28 +700,28 @@
 
         <el-table-column
             label="Module Type">
-          <template slot-scope="props">
+          <template #default="props">
             {{ getTypeFriendlyName(props.row.type) }}
           </template>
         </el-table-column>
 
         <el-table-column
             label="Module SN">
-          <template slot-scope="props">
+          <template #default="props">
             <el-input v-model="props.row.sn" @input="(val) => {props.row.latency_topic = `/ecat/sn${val}/latency`}"/>
           </template>
         </el-table-column>
 
         <el-table-column
             label="Module Latency Topic">
-          <template slot-scope="props">
+          <template #default="props">
             <el-input v-model="props.row.latency_topic"/>
           </template>
         </el-table-column>
 
         <el-table-column
             label="Operations">
-          <template slot-scope="props">
+          <template #default="props">
             <el-button @click="removeModule(props.$index)">Remove</el-button>
           </template>
         </el-table-column>
@@ -776,10 +767,12 @@ import WriteLkMotorSingleRoundPositionControlWithSpeedLimit
 import ReadSuperCap from "@/components/message_types/ReadSuperCap.vue";
 import WriteSuperCap from "@/components/message_types/WriteSuperCap.vue";
 import ReadCANPMU from "@/components/message_types/ReadCANPMU.vue";
+import ModuleAddButtons from "@/components/module_settings/ModuleAddButtons.vue";
 
 export default {
   name: 'NewTaskAssignment',
   components: {
+    ModuleAddButtons,
     ReadCANPMU,
     WriteLkMotorSingleRoundPositionControlWithSpeedLimit,
     WriteLkMotorMultiRoundPositionControlWithSpeedLimit,
@@ -1007,6 +1000,9 @@ export default {
     }
   },
   methods: {
+    addModule(type) {
+      this.modules.push({type, task: [], latency_topic: '', sn: ''});
+    },
     getTypeFriendlyName(hexId) {
       switch (hexId) {
           // deprecated
