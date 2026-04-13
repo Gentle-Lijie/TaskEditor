@@ -21,23 +21,25 @@
             <div>
               <div class="text item with_margin_bottom" style="margin: 30px">
                 <el-divider content-position="left">Add Task</el-divider>
-                <el-button @click="addTask(props.row.task, examples.djirc)">DJI RC</el-button>
-                <el-button @click="addTask(props.row.task, examples.sbus_rc)">SBUS RC</el-button>
-                <el-button @click="addTask(props.row.task, examples.hipnucimu_can)">HIPNUC IMU(CAN)</el-button>
-                <el-button @click="addTask(props.row.task, examples.super_cap)">SUPER CAP(CAN)</el-button>
-                <el-button @click="addTask(props.row.task, examples.ms5837_30ba)">MS5837(30BA)</el-button>
-                <!--                <el-button @click="addTask(props.row.task, examples.adc)">OnBoard ADC *UNTESTED</el-button>-->
-                <el-button @click="addTask(props.row.task, examples.can_pmu)">PMU(CAN)</el-button>
-
-                <el-divider direction="vertical"/>
-                <el-button @click="addTask(props.row.task, examples.djican)">DJI Motor</el-button>
-                <el-button @click="addTask(props.row.task, examples.dm_motor)">DM Motor</el-button>
-                <el-button @click="addTask(props.row.task, examples.lktech)">LkTech Motor</el-button>
-
-                <el-button @click="addTask(props.row.task, examples.dshot)">DSHOT600</el-button>
-                <el-button @click="addTask(props.row.task, examples.vanilla_pwm)">OnBoard PWM</el-button>
-
-                <el-button @click="addTask(props.row.task, examples.external_pwm)">ExternalBoard PWM</el-button>
+                <div class="add-task-row">
+                  <el-tag type="success" effect="dark" class="add-task-tag">TXPDO (slv→mst)</el-tag>
+                  <el-button @click="addTask(props.row.task, examples.djirc)">DJI RC</el-button>
+                  <el-button @click="addTask(props.row.task, examples.sbus_rc)">SBUS RC</el-button>
+                  <el-button @click="addTask(props.row.task, examples.hipnucimu_can)">HIPNUC IMU(CAN)</el-button>
+                  <el-button @click="addTask(props.row.task, examples.super_cap)">SUPER CAP(CAN)</el-button>
+                  <el-button @click="addTask(props.row.task, examples.ms5837_30ba)">MS5837(30BA)</el-button>
+                  <!--                <el-button @click="addTask(props.row.task, examples.adc)">OnBoard ADC *UNTESTED</el-button>-->
+                  <el-button @click="addTask(props.row.task, examples.can_pmu)">PMU(CAN)</el-button>
+                </div>
+                <div class="add-task-row">
+                  <el-tag type="warning" effect="dark" class="add-task-tag">RXPDO (mst→slv)</el-tag>
+                  <el-button @click="addTask(props.row.task, examples.djican)">DJI Motor</el-button>
+                  <el-button @click="addTask(props.row.task, examples.dm_motor)">DM Motor</el-button>
+                  <el-button @click="addTask(props.row.task, examples.lktech)">LkTech Motor</el-button>
+                  <el-button @click="addTask(props.row.task, examples.dshot)">DSHOT600</el-button>
+                  <el-button @click="addTask(props.row.task, examples.vanilla_pwm)">OnBoard PWM</el-button>
+                  <el-button @click="addTask(props.row.task, examples.external_pwm)">ExternalBoard PWM</el-button>
+                </div>
 
                 <el-divider content-position="left">Module Task Detail Configuration</el-divider>
                 <el-table
@@ -1096,5 +1098,18 @@ export default {
 
 .with_margin_bottom > .el-button {
   margin-bottom: 10px;
+}
+
+.add-task-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.add-task-tag {
+  margin-right: 10px;
+  font-size: 13px;
+  flex-shrink: 0;
 }
 </style>

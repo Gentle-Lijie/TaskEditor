@@ -84,4 +84,10 @@ export default {
   background: url('@/assets/images/xh.png') no-repeat left center;
   background-size: contain;
 }
+
+.msg-type-fields {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
 </style>
