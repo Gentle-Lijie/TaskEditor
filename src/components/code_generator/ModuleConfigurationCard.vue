@@ -32,13 +32,18 @@
         </div>
       </div>
     </template>
-    <div class="text item code" style="white-space: pre-wrap;">{{ moduleConfiguration.configuration }}</div>
+    <div class="text item code">
+      <highlightjs language="yaml" :code="moduleConfiguration.configuration"/>
+    </div>
   </el-card>
 </template>
 
 <script>
+import highlightjs from '@/components/code_generator/highlightjs.vue';
+
 export default {
   name: 'ModuleConfigurationCard',
+  components: { highlightjs },
   props: {
     moduleConfiguration: {
       type: Object,
