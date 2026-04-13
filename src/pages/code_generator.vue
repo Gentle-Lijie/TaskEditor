@@ -57,7 +57,6 @@ export default {
         case 0x04:
           return 'H750 Universal Module (Large PDO V.)';
       }
-      return '';
     },
     getPdoLen(hexId) {
       switch (hexId) {
@@ -66,7 +65,6 @@ export default {
         case 0x04:
           return [112, 80];
       }
-      return [0, 0];
     },
     downloadAll() {
       let textToSave = this.header;
