@@ -51,7 +51,7 @@ pnpm build
 pnpm lint
 ```
 
-## Why package count was high
+## Dependency reduction notes
 
 The previous toolchain used Vue CLI + Webpack, which introduces a large dependency tree.
 The project now uses Vite and removes unused runtime dependencies to reduce total installed packages.

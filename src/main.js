@@ -7,7 +7,7 @@ import App from './App.vue';
 const app = createApp(App);
 
 app.use(ElementPlus, {
-  size: 'default',
+  size: 'medium',
   locale: enLang,
 });
 
