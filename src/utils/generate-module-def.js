@@ -273,6 +273,9 @@ export function generateModuleDef(module) {
                 pdowrite_offset += 4
                 break
             }
+            case 14: {
+                pdoread_offset += 18
+            }
         }
     }
 

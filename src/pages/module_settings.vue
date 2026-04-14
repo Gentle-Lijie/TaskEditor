@@ -30,7 +30,11 @@
               <div class="text item with_margin_bottom" style="margin: 30px">
                 <el-divider content-position="left">Add Task</el-divider>
                 <el-button @click="props.row.task.push(deepClone(examples.djirc))">DJI RC</el-button>
+                <el-button @click="props.row.task.push(deepClone(examples.djivt13))">DJI VT13</el-button>
                 <el-button @click="props.row.task.push(deepClone(examples.sbus_rc))">SBUS RC</el-button>
+                <el-divider direction="vertical"/>
+
+
                 <el-button @click="props.row.task.push(deepClone(examples.hipnucimu_can))">HIPNUC IMU(CAN)</el-button>
                 <el-button @click="props.row.task.push(deepClone(examples.super_cap))">SUPER CAP(CAN)</el-button>
                 <el-button @click="props.row.task.push(deepClone(examples.ms5837_30ba))">MS5837(30BA)</el-button>
@@ -685,6 +689,28 @@
                           </el-form>
                         </div>
                       </div>
+                      <!--VT13-->
+                      <div v-else-if="props2.row.type === 14">
+                        <div class="text item" style="margin: 30px">
+                          <el-form label-position="left" label-width="50%" size="small">
+
+                            <el-divider content-position="left">Task Configuration</el-divider>
+                            <connection-lost-action-selector v-model="props2.row.connection_lost_read_action"
+                                                             label="Report"/>
+                            <el-divider content-position="left">ROS2 Configuration</el-divider>
+                            <ros2-topic-name-input
+                                :sub="false"
+                                :pub="true"
+                                :row="props2"
+                                :sn="props.row.sn"
+                                pub-label="DJI VT13"/>
+
+                            <el-divider content-position="left">ROS2 Message Definition - DJI VT13
+                            </el-divider>
+                            <ReadVT13/>
+                          </el-form>
+                        </div>
+                      </div>
                     </template>
                   </el-table-column>
 
@@ -761,6 +787,7 @@ import ControlPeriodInput from "@/components/ControlPeriodInput.vue";
 import NumberInput from "@/components/NumberInput.vue";
 import PortSelector from "@/components/PortSelector.vue";
 import ReadDJIRC from "@/components/message_types/ReadDJIRC.vue";
+import ReadVT13 from "@/components/message_types/ReadVT13RC.vue"
 import ReadLkMotor from "@/components/message_types/ReadLkMotor.vue";
 import WriteLkMotorOpenloopControl from "@/components/message_types/WriteLkMotorOpenloopControl.vue";
 import WriteLkMotorBroadcastCurrentControl from "@/components/message_types/WriteLkMotorBroadcastCurrentControl.vue";
@@ -790,6 +817,7 @@ export default {
     ReadLkMotorMulti,
     ReadLkMotor,
     ReadDJIRC,
+    ReadVT13,
     PortSelector,
     ReadMS5837BA30,
     NumberInput,
@@ -818,6 +846,11 @@ export default {
         // write = mst to slv
         djirc: {
           type: 0x01,
+          read_topic: '',
+          connection_lost_read_action: 0x01,
+        },
+        djivt13: {
+          type: 14,
           read_topic: '',
           connection_lost_read_action: 0x01,
         },
@@ -1048,6 +1081,8 @@ export default {
           return "DM Motor"
         case 13:
           return "Super Capacitor"
+        case 14:
+          return "DJI VT13"
       }
     },
     removeModule(idx) {
