@@ -3,7 +3,7 @@
 <template>
   <div>
     <el-form-item label="Message Type" style="margin: 0">
-      <el-tag>custom_msgs/ReadDJIMotor</el-tag>
+      <el-tag>custom_msgs/ReadDDMotor</el-tag>
     </el-form-item>
     <el-divider/>
     <el-form-item class="havetag" label="header" style="margin: 0">
@@ -17,12 +17,12 @@
         <el-tag size="small">uint16</el-tag>
       </el-form-item>
       <el-form-item :label="`motor${i}_rpm`" class="havetag" style="margin: 0">
-        <el-tag size="small">int16</el-tag>
+        <el-tag size="small">float32</el-tag>
       </el-form-item>
       <el-form-item :label="`motor${i}_current`" class="havetag" style="margin: 0">
         <el-tag size="small">int16</el-tag>
       </el-form-item>
-      <el-form-item :label="`motor${i}_temperature`" class="havetag" style="margin: 0">
+      <el-form-item :label="`motor${i}_mode`" class="havetag" style="margin: 0">
         <el-tag size="small">uint8</el-tag>
       </el-form-item>
       <el-form-item :label="`motor${i}_error_code`" class="havetag" style="margin: 0">

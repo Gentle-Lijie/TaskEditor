@@ -32,9 +32,8 @@
                 <el-button @click="props.row.task.push(deepClone(examples.djirc))">DJI RC</el-button>
                 <el-button @click="props.row.task.push(deepClone(examples.djivt13))">DJI VT13</el-button>
                 <el-button @click="props.row.task.push(deepClone(examples.sbus_rc))">SBUS RC</el-button>
+
                 <el-divider direction="vertical"/>
-
-
                 <el-button @click="props.row.task.push(deepClone(examples.hipnucimu_can))">HIPNUC IMU(CAN)</el-button>
                 <el-button @click="props.row.task.push(deepClone(examples.super_cap))">SUPER CAP(CAN)</el-button>
                 <el-button @click="props.row.task.push(deepClone(examples.ms5837_30ba))">MS5837(30BA)</el-button>
@@ -45,10 +44,11 @@
                 <el-button @click="props.row.task.push(deepClone(examples.djican))">DJI Motor</el-button>
                 <el-button @click="props.row.task.push(deepClone(examples.dm_motor))">DM Motor</el-button>
                 <el-button @click="props.row.task.push(deepClone(examples.lktech))">LkTech Motor</el-button>
+                <el-button @click="props.row.task.push(deepClone(examples.ddmotor))">DD Motor</el-button>
 
+                <el-divider direction="vertical"/>
                 <el-button @click="props.row.task.push(deepClone(examples.dshot))">DSHOT600</el-button>
                 <el-button @click="props.row.task.push(deepClone(examples.vanilla_pwm))">OnBoard PWM</el-button>
-
                 <el-button @click="props.row.task.push(deepClone(examples.external_pwm))">ExternalBoard PWM</el-button>
 
                 <el-divider content-position="left">Module Task Detail Configuration</el-divider>
@@ -711,6 +711,97 @@
                           </el-form>
                         </div>
                       </div>
+
+                      <!-- DD MOTOR -->
+                      <div v-if="props2.row.type === 15">
+                        <div class="text item" style="margin: 30px">
+                          <el-form label-position="left" label-width="50%" size="small">
+
+                            <el-divider content-position="left">Task Configuration</el-divider>
+                            <control-period-input :row="props2.row"/>
+                            <connection-lost-action-selector v-model="props2.row.connection_lost_write_action"
+                                                             label="Control"/>
+                            <connection-lost-action-selector v-model="props2.row.connection_lost_read_action"
+                                                             label="Report"/>
+
+                            <el-divider content-position="left">CAN Configuration</el-divider>
+                            <can-selector :row="props2.row" :showBaudrate="false"/>
+
+                            <el-form-item label="CAN Baudrate">
+                              <el-radio-group v-model="props2.row.can_type">
+                                <el-radio :label="1">1M</el-radio>
+                                <el-radio :label="2">500K</el-radio>
+                              </el-radio-group>
+                            </el-form-item>
+
+                            <el-form-item class="havetag" label="Motor Control Packet ID">
+                              <el-radio-group v-model="props2.row.can_packet_id">
+                                <el-radio :label="0x32" style="padding-bottom: 5px">0x32
+                                  <el-tag size="small" style="margin-left: 10px">ID1-4</el-tag>
+                                </el-radio>
+                                <br/>
+
+                                <el-radio :label="0x33" style="padding-bottom: 5px">0x33
+                                  <el-tag size="small" style="margin-left: 10px">ID5-8</el-tag>
+                                </el-radio>
+                                <br/>
+                              </el-radio-group>
+                            </el-form-item>
+
+                            <div v-for="i in [1, 2, 3, 4]" :key="i">
+                              <el-form-item :label="`Motor${i} Enable`" style="margin: 0">
+                                <el-switch v-model="props2.row.motor_enable[i-1]"/>
+                              </el-form-item>
+                              <el-form-item v-show="props2.row.motor_enable[i-1]" :label="`Motor${i} ID`"
+                                            style="margin: 0">
+                                <el-radio-group v-model="props2.row.motor_id[i-1]">
+                                  <el-radio :label="1">1</el-radio>
+                                  <el-radio :label="2">2</el-radio>
+                                  <el-radio :label="3">3</el-radio>
+                                  <el-radio :label="4">4</el-radio>
+                                  <el-radio :label="5">5</el-radio>
+                                  <el-radio :label="6">6</el-radio>
+                                  <el-radio :label="7">7</el-radio>
+                                  <el-radio :label="8">8</el-radio>
+                                </el-radio-group>
+                              </el-form-item>
+                            </div>
+
+                            <el-divider content-position="left">Motor Configuration</el-divider>
+
+                            <div v-for="i in [1, 2, 3, 4]" :key="i*5">
+                              <el-form-item v-show="props2.row.motor_enable[i-1]" :label="`Motor${i} Control Type`"
+                                            style="margin: 0">
+                                <el-radio-group v-model="props2.row.motor_control_type[i-1]">
+                                  <el-radio :label="0x01">Openloop Voltage</el-radio>
+                                  <el-radio :label="0x02">Closedloop Current</el-radio>
+                                  <el-radio :label="0x03">Speed</el-radio>
+                                  <el-radio :label="0x04">Single-Round Position</el-radio>
+                                </el-radio-group>
+                              </el-form-item>
+
+                            </div>
+
+                            <el-divider content-position="left">ROS2 Configuration</el-divider>
+                            <ros2-topic-name-input
+                                :sub="true"
+                                :pub="true"
+                                :row="props2"
+                                :sn="props.row.sn"
+                                pub-label="Motor Feedback"
+                                sub-label="Motor Command"/>
+
+                            <el-divider content-position="left">ROS2 Message Definition - Motor Feedback</el-divider>
+                            <ReadDDMotor/>
+
+                            <el-divider content-position="left">ROS2 Message Definition - Motor Control Command
+                            </el-divider>
+                            <WriteDDMotor/>
+
+                          </el-form>
+                        </div>
+                      </div>
+
                     </template>
                   </el-table-column>
 
@@ -774,8 +865,10 @@ import ReadSBUSRC from "@/components/message_types/ReadSBUSRC.vue";
 import WriteDSHOT from "@/components/message_types/WriteDSHOT.vue";
 import WriteOnBoardPWM from "@/components/message_types/WriteOnBoardPWM.vue";
 import WriteDJIMotor from "@/components/message_types/WriteDJIMotor.vue";
+import WriteDDMotor from "@/components/message_types/WriteDDMotor.vue";
 import WriteExternalPWM from "@/components/message_types/WriteExternalPWM.vue";
 import ReadDJIMotor from "@/components/message_types/ReadDJIMotor.vue";
+import ReadDDMotor from "@/components/message_types/ReadDDMotor.vue";
 import WriteDmMotorMITControl from "@/components/message_types/WriteDmMotorMITControl.vue";
 import WriteDmMotorSpeedControl from "@/components/message_types/WriteDmMotorSpeedControl.vue";
 import WriteDmMotorPositionControlWithSpeedLimit
@@ -837,7 +930,9 @@ export default {
     ReadSBUSRC,
     WriteOnBoardPWM,
     WriteSuperCap,
-    ReadSuperCap
+    ReadSuperCap,
+    ReadDDMotor,
+    WriteDDMotor
   },
   data() {
     return {
@@ -1021,7 +1116,21 @@ export default {
           connection_lost_write_action: 0x01,
           read_topic: '',
           write_topic: ''
-        }
+        },
+        ddmotor: {
+          type: 15,
+          can_inst: 1,
+          can_type: 1,
+          can_packet_id: 0x32,
+          control_period: 1,
+          motor_enable: [true, true, true, true],
+          motor_id: [1, 2, 3, 4],
+          motor_control_type: [0x01, 0x01, 0x01, 0x01],
+          connection_lost_read_action: 0x01,
+          connection_lost_write_action: 0x01,
+          read_topic: '',
+          write_topic: '',
+        },
       },
       modules: [],
     }
@@ -1083,6 +1192,8 @@ export default {
           return "Super Capacitor"
         case 14:
           return "DJI VT13"
+        case 15:
+          return "DD Motor"
       }
     },
     removeModule(idx) {

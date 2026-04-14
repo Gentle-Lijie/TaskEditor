@@ -273,8 +273,37 @@ export function generateModuleDef(module) {
                 pdowrite_offset += 4
                 break
             }
+            // vt13
             case 14: {
                 pdoread_offset += 18
+                break
+            }
+            // dd motor
+            case 15: {
+                res += append_item(6, 'sdowrite_control_period', 'uint16_t', task_info.control_period)
+                res += append_item(6, 'sdowrite_can_baudrate', 'uint8_t', task_info.can_type)
+                res += append_item(6, 'sdowrite_can_packet_id', 'uint32_t', toHexStringWithPrefix(task_info.can_packet_id))
+                res += append_item(6, 'sdowrite_motor1_can_id', 'uint32_t', task_info.motor_enable[0] ? toHexStringWithPrefix(task_info.motor_id[0] + 0x96) : 0)
+                res += append_item(6, 'sdowrite_motor2_can_id', 'uint32_t', task_info.motor_enable[1] ? toHexStringWithPrefix(task_info.motor_id[1] + 0x96) : 0)
+                res += append_item(6, 'sdowrite_motor3_can_id', 'uint32_t', task_info.motor_enable[2] ? toHexStringWithPrefix(task_info.motor_id[2] + 0x96) : 0)
+                res += append_item(6, 'sdowrite_motor4_can_id', 'uint32_t', task_info.motor_enable[3] ? toHexStringWithPrefix(task_info.motor_id[3] + 0x96) : 0)
+                res += append_item(6, 'sdowrite_can_inst', 'uint8_t', task_info.can_inst)
+
+                let pdoread_len = 0
+                let pdowrite_len = 0
+                for (let j = 1; j <= 4; j++) {
+                    if (!task_info.motor_enable[j - 1]) {
+                        continue;
+                    }
+                    pdoread_len += 9
+                    pdowrite_len += 3
+
+                    res += append_item(6, `sdowrite_motor${j}_control_type`, 'uint8_t', task_info.motor_control_type[j - 1])
+                }
+
+                pdoread_offset += pdoread_len
+                pdowrite_offset += pdowrite_len
+                break
             }
         }
     }

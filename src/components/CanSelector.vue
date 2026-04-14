@@ -7,7 +7,7 @@
       </el-radio-group>
     </el-form-item>
 
-    <el-form-item label="CAN Baudrate">
+    <el-form-item label="CAN Baudrate" v-if="showBaudrate">
       <el-tag>{{ baudrate }}</el-tag>
     </el-form-item>
   </div>
@@ -17,8 +17,9 @@
 export default {
   name: "CanSelector",
   props: {
-    row: { type: Object, required: true },
-    baudrate: { type: String, default: "1 Mbit/s" }
+    row: {type: Object, required: true},
+    showBaudrate: {type: Boolean, default: true},
+    baudrate: {type: String, default: "1 Mbit/s"}
   }
 }
 </script>
