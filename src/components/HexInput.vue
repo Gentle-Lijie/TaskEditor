@@ -1,7 +1,7 @@
 <template>
   <el-form-item :label="label">
     <el-input v-model="row[field]">
-      <template slot="prefix">0x</template>
+      <template #prefix>0x</template>
     </el-input>
   </el-form-item>
 </template>

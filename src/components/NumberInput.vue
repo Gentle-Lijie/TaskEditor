@@ -4,7 +4,7 @@
         v-model="row[field]"
         @input="onInput"
     >
-      <template slot="append" v-if="unit">{{ unit }}</template>
+      <template #append v-if="unit">{{ unit }}</template>
     </el-input>
   </el-form-item>
 </template>

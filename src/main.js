@@ -1,15 +1,14 @@
-import Vue from 'vue';
-import Element from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css';
+import { createApp } from 'vue';
+import ElementPlus from 'element-plus';
+import 'element-plus/dist/index.css';
+import enLang from 'element-plus/es/locale/lang/en';
 import App from './App.vue';
 
-import enLang from 'element-ui/lib/locale/lang/en'
+const app = createApp(App);
 
-Vue.use(Element, {
-    size: 'medium', locale: enLang
-})
-
-new Vue({
-    el: '#app',
-    render: h => h(App)
+app.use(ElementPlus, {
+  size: 'medium',
+  locale: enLang,
 });
+
+app.mount('#app');

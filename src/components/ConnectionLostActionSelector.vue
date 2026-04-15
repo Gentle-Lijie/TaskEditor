@@ -9,26 +9,27 @@
 
 <script>
 export default {
-  name: "ConnectionLostActionSelector",
+  name: 'ConnectionLostActionSelector',
   props: {
-    value: {
+    modelValue: {
       type: Number,
-      default: 0x01
+      default: 0x01,
     },
     label: {
       type: String,
-      default: "Publisher"
-    }
+      default: 'Publisher',
+    },
   },
+  emits: ['update:modelValue'],
   computed: {
     currentValue: {
       get() {
-        return this.value;
+        return this.modelValue;
       },
       set(val) {
-        this.$emit("input", val);
-      }
-    }
-  }
+        this.$emit('update:modelValue', val);
+      },
+    },
+  },
 };
 </script>

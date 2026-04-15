@@ -1,6 +1,6 @@
 # EtherCAT Module Configuration Web App
 
-This project is a Vue-based web application designed for configuring EtherCAT modules and generating their corresponding configuration files (YAML). 
+This project is a Vue-based web application designed for configuring EtherCAT modules and generating their corresponding configuration files (YAML).
 
 ## Features
 
@@ -25,23 +25,36 @@ This project is a Vue-based web application designed for configuring EtherCAT mo
 ### Prerequisites
 
 * Node.js
-* npm or yarn
+* pnpm
 
 ### Installation
 
-1. Clone the repository.
-2. Install dependencies:
 ```bash
-npm install
+pnpm install
 ```
 
 ### Development
 
-Run the application locally:
+```bash
+pnpm serve
+```
+
+### Build
 
 ```bash
-npm run serve
+pnpm build
 ```
+
+### Lint
+
+```bash
+pnpm lint
+```
+
+## Dependency reduction notes
+
+The previous toolchain used Vue CLI + Webpack, which introduces a large dependency tree.
+The project now uses Vite and removes unused runtime dependencies to reduce total installed packages.
 
 ### Usage
 
