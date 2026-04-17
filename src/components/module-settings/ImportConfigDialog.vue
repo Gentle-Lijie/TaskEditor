@@ -31,6 +31,45 @@
     <!-- Step 2: Preview -->
     <div v-if="step === 'preview'">
       <el-alert
+        v-if="verifyResult && !verifyResult.valid"
+        type="error"
+        :closable="false"
+        style="margin-bottom: 15px;"
+      >
+        <template #title>Verification Failed ({{ verifyResult.stats.totalErrors }} error(s))</template>
+        <div v-for="(err, idx) in verifyResult.errors.slice(0, 10)" :key="'e'+idx" style="font-size: 12px;">
+          {{ formatVerifyIssue(err) }}
+        </div>
+        <div v-if="verifyResult.errors.length > 10" style="font-size: 12px; color: #909399;">
+          ... and {{ verifyResult.errors.length - 10 }} more errors
+        </div>
+      </el-alert>
+
+      <el-alert
+        v-if="verifyResult && verifyResult.valid && verifyResult.warnings.length > 0"
+        type="warning"
+        :closable="false"
+        style="margin-bottom: 15px;"
+      >
+        <template #title>Verification Warnings ({{ verifyResult.warnings.length }})</template>
+        <div v-for="(warn, idx) in verifyResult.warnings.slice(0, 10)" :key="'w'+idx" style="font-size: 12px;">
+          {{ formatVerifyIssue(warn) }}
+        </div>
+        <div v-if="verifyResult.warnings.length > 10" style="font-size: 12px; color: #909399;">
+          ... and {{ verifyResult.warnings.length - 10 }} more warnings
+        </div>
+      </el-alert>
+
+      <el-alert
+        v-if="verifyResult && verifyResult.valid && verifyResult.warnings.length === 0"
+        type="success"
+        :closable="false"
+        style="margin-bottom: 15px;"
+      >
+        <template #title>Verification Passed</template>
+      </el-alert>
+
+      <el-alert
         v-if="parseErrors.length > 0"
         type="warning"
         :closable="false"
@@ -77,7 +116,11 @@
 
       <div style="margin-top: 15px; text-align: right;">
         <el-button @click="step = 'select'">Back</el-button>
-        <el-button type="primary" @click="doImport">
+        <el-button
+          type="primary"
+          :disabled="verifyResult && !verifyResult.valid"
+          @click="doImport"
+        >
           Import (replace current config)
         </el-button>
       </div>
@@ -98,6 +141,7 @@
 <script>
 import { UploadFilled, CircleCheckFilled } from '@element-plus/icons-vue';
 import { parseConfigYaml } from '@/utils/parse-config';
+import { verifyConfig } from '@/utils/verify-config';
 
 export default {
   name: 'ImportConfigDialog',
@@ -113,6 +157,7 @@ export default {
       fileName: '',
       parsedModules: [],
       parseErrors: [],
+      verifyResult: null,
     };
   },
   computed: {
@@ -135,6 +180,9 @@ export default {
       const result = parseConfigYaml(this.fileContent);
       this.parsedModules = result.modules;
       this.parseErrors = result.errors;
+
+      // Run verification
+      this.verifyResult = verifyConfig(this.fileContent);
 
       if (this.parsedModules.length === 0) {
         this.parseErrors.push({ message: 'No valid modules found in file' });
@@ -161,10 +209,20 @@ export default {
       this.fileName = '';
       this.parsedModules = [];
       this.parseErrors = [];
+      this.verifyResult = null;
     },
 
     close() {
       this.visible = false;
+    },
+
+    formatVerifyIssue(issue) {
+      const parts = [];
+      if (issue.module) parts.push(`sn${issue.module}`);
+      if (issue.task) parts.push(issue.task);
+      const loc = parts.length > 0 ? `[${parts.join('/')}] ` : '';
+      const line = issue.line ? `L${issue.line}: ` : '';
+      return `${loc}${line}${issue.message}`;
     },
 
     getAppTypeFriendlyName(hexId) {

@@ -812,6 +812,7 @@
                       label="Operations">
                     <template #default="props2">
                       <el-button @click="props.row.task.splice(props2.$index, 1)">Remove</el-button>
+                      <el-button v-if="modules.length > 1" @click="openMoveDialog(props.row.task, props2.$index)">Move</el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -855,6 +856,23 @@
     </div>
 
     <import-config-dialog v-model="showImportDialog" @imported="handleImport" />
+
+    <el-dialog v-model="moveDialogVisible" title="Move Task" width="400px">
+      <p>Select target module:</p>
+      <el-select v-model="moveTargetIndex" placeholder="Select module" style="width: 100%;">
+        <el-option
+            v-for="(mod, idx) in modules"
+            :key="mod._uid"
+            :label="`${getTypeFriendlyName(mod.type)}${mod.sn ? ' (SN: ' + mod.sn + ')' : ''}`"
+            :value="idx"
+            :disabled="idx === moveSourceModuleIndex"
+        />
+      </el-select>
+      <template #footer>
+        <el-button @click="moveDialogVisible = false">Cancel</el-button>
+        <el-button type="primary" :disabled="moveTargetIndex === null" @click="doMoveTask">Move</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -1139,6 +1157,11 @@ export default {
       },
       modules: [],
       showImportDialog: false,
+      moveDialogVisible: false,
+      moveSourceTaskList: null,
+      moveSourceIndex: -1,
+      moveSourceModuleIndex: -1,
+      moveTargetIndex: null,
     }
   },
   watch: {
@@ -1174,6 +1197,19 @@ export default {
       const cloned = this.deepClone(example);
       cloned._uid = this._uidCounter++;
       taskList.push(cloned);
+    },
+    openMoveDialog(sourceTaskList, sourceIndex) {
+      this.moveSourceTaskList = sourceTaskList;
+      this.moveSourceIndex = sourceIndex;
+      this.moveSourceModuleIndex = this.modules.findIndex(mod => mod.task === sourceTaskList);
+      this.moveTargetIndex = null;
+      this.moveDialogVisible = true;
+    },
+    doMoveTask() {
+      if (this.moveTargetIndex === null) return;
+      const task = this.moveSourceTaskList.splice(this.moveSourceIndex, 1)[0];
+      this.modules[this.moveTargetIndex].task.push(task);
+      this.moveDialogVisible = false;
     },
     getTypeFriendlyName(hexId) {
       switch (hexId) {
