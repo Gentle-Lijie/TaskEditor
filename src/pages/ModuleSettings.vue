@@ -9,6 +9,9 @@
         <el-button type="" size="small" style="margin-left: 15px;" @click="showImportDialog = true">
           Import Config
         </el-button>
+        <el-button type="" size="small" style="margin-left: 5px;" @click="verifyCurrentConfig">
+          Verify
+        </el-button>
       </span>
     </el-divider>
     <div>
@@ -857,6 +860,50 @@
 
     <import-config-dialog v-model="showImportDialog" @imported="handleImport" />
 
+    <el-dialog v-model="verifyDialogVisible" title="Verify Configuration" width="600px">
+      <div v-if="verifyResult">
+        <el-alert
+          v-if="verifyResult.valid"
+          type="success"
+          :closable="false"
+          style="margin-bottom: 15px;"
+        >
+          <template #title>Configuration is valid ({{ verifyResult.stats.moduleCount }} modules, {{ verifyResult.stats.taskCount }} tasks)</template>
+        </el-alert>
+        <el-alert
+          v-else
+          type="error"
+          :closable="false"
+          style="margin-bottom: 15px;"
+        >
+          <template #title>Verification Failed ({{ verifyResult.stats.totalErrors }} error(s), {{ verifyResult.stats.totalWarnings }} warning(s))</template>
+        </el-alert>
+
+        <div v-if="verifyResult.errors.length > 0" style="margin-bottom: 15px;">
+          <div style="font-weight: bold; color: #f56c6c; margin-bottom: 8px;">Errors:</div>
+          <div v-for="(err, idx) in verifyResult.errors.slice(0, 20)" :key="'e'+idx" style="font-size: 13px; color: #f56c6c; margin-bottom: 4px;">
+            {{ formatVerifyIssue(err) }}
+          </div>
+          <div v-if="verifyResult.errors.length > 20" style="font-size: 12px; color: #909399;">
+            ... and {{ verifyResult.errors.length - 20 }} more errors
+          </div>
+        </div>
+
+        <div v-if="verifyResult.warnings.length > 0">
+          <div style="font-weight: bold; color: #e6a23c; margin-bottom: 8px;">Warnings:</div>
+          <div v-for="(warn, idx) in verifyResult.warnings.slice(0, 20)" :key="'w'+idx" style="font-size: 13px; color: #e6a23c; margin-bottom: 4px;">
+            {{ formatVerifyIssue(warn) }}
+          </div>
+          <div v-if="verifyResult.warnings.length > 20" style="font-size: 12px; color: #909399;">
+            ... and {{ verifyResult.warnings.length - 20 }} more warnings
+          </div>
+        </div>
+      </div>
+      <template #footer>
+        <el-button type="primary" @click="verifyDialogVisible = false">Close</el-button>
+      </template>
+    </el-dialog>
+
     <el-dialog v-model="moveDialogVisible" title="Move Task" width="400px">
       <p>Select target module:</p>
       <el-select v-model="moveTargetIndex" placeholder="Select module" style="width: 100%;">
@@ -879,6 +926,8 @@
 <script>
 
   import ImportConfigDialog from "@/components/module-settings/ImportConfigDialog.vue";
+import { verifyConfig } from "@/utils/verify-config";
+import { generateModuleDef } from "@/utils/generate-module-def";
 import ConnectionLostActionSelector from "@/components/ConnectionLostActionSelector.vue";
 import ReadDmMotor from "@/components/message-types/ReadDmMotor.vue";
 import ReadSBUSRC from "@/components/message-types/ReadSBUSRC.vue";
@@ -1157,6 +1206,8 @@ export default {
       },
       modules: [],
       showImportDialog: false,
+      verifyDialogVisible: false,
+      verifyResult: null,
       moveDialogVisible: false,
       moveSourceTaskList: null,
       moveSourceIndex: -1,
@@ -1278,7 +1329,30 @@ export default {
     handleImport(importedModules) {
       this.modules = importedModules;
       this.showImportDialog = false;
-    }
+    },
+    verifyCurrentConfig() {
+      if (this.modules.length === 0) {
+        this.verifyResult = { valid: false, errors: [{ message: 'No modules to verify' }], warnings: [], stats: { moduleCount: 0, taskCount: 0, totalErrors: 1, totalWarnings: 0 } };
+        this.verifyDialogVisible = true;
+        return;
+      }
+      // Generate YAML from current modules, then verify
+      let fullYaml = 'slaves:\n';
+      for (const mod of this.modules) {
+        const result = generateModuleDef(mod);
+        fullYaml += result.configuration;
+      }
+      this.verifyResult = verifyConfig(fullYaml);
+      this.verifyDialogVisible = true;
+    },
+    formatVerifyIssue(issue) {
+      const parts = [];
+      if (issue.module) parts.push(`sn${issue.module}`);
+      if (issue.task) parts.push(issue.task);
+      const loc = parts.length > 0 ? `[${parts.join('/')}] ` : '';
+      const line = issue.line ? `L${issue.line}: ` : '';
+      return `${loc}${line}${issue.message}`;
+    },
   }
 }
 </script>

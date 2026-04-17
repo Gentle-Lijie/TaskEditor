@@ -477,6 +477,7 @@ export function verifyConfig(yamlText) {
         code: 'TASK_COUNT_MISMATCH',
         module: mod.sn,
         line: mod.line,
+        fixable: true,
         message: `Declared task_count=${mod.task_count_declared} but found ${mod.tasks.length} task(s)`,
       });
     }
@@ -492,6 +493,7 @@ export function verifyConfig(yamlText) {
         code: 'SDO_LEN_MISMATCH',
         module: mod.sn,
         line: mod.line,
+        fixable: true,
         message: `Declared sdo_len=${mod.sdo_len_declared} but calculated=${expectedSdoLen}`,
       });
     }
@@ -756,6 +758,7 @@ export function verifyConfig(yamlText) {
             module: mod.sn,
             task: `app_${task.appNum}`,
             line: task.line,
+            fixable: true,
             message: `pdoread_offset=${flat['pdoread_offset']} but expected ${expected.pdoread_offset}`,
           });
         }
@@ -765,6 +768,7 @@ export function verifyConfig(yamlText) {
             module: mod.sn,
             task: `app_${task.appNum}`,
             line: task.line,
+            fixable: true,
             message: `pdowrite_offset=${flat['pdowrite_offset']} but expected ${expected.pdowrite_offset}`,
           });
         }

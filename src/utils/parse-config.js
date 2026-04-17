@@ -23,11 +23,13 @@ const INT_TAGS = new Set([
 
 function parseTypedValue(rawValue, tag, lineNum, errors) {
   if (tag === 'std::string') {
-    if ((rawValue.startsWith("'") && rawValue.endsWith("'")) ||
-        (rawValue.startsWith('"') && rawValue.endsWith('"'))) {
-      return rawValue.slice(1, -1);
+    let v = rawValue;
+    while (v.length >= 2 &&
+      ((v[0] === "'" && v[v.length - 1] === "'") ||
+       (v[0] === '"' && v[v.length - 1] === '"'))) {
+      v = v.slice(1, -1);
     }
-    return rawValue;
+    return v;
   }
   if (tag === 'float') {
     const num = parseFloat(rawValue);
