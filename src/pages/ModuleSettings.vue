@@ -6,6 +6,9 @@
     <el-divider>
       <span>
         Module List
+        <el-button type="" size="small" style="margin-left: 15px;" @click="showImportDialog = true">
+          Import Config
+        </el-button>
       </span>
     </el-divider>
     <div>
@@ -850,11 +853,14 @@
       </el-table>
 
     </div>
+
+    <import-config-dialog v-model="showImportDialog" @imported="handleImport" />
   </div>
 </template>
 
 <script>
 
+  import ImportConfigDialog from "@/components/module-settings/ImportConfigDialog.vue";
 import ConnectionLostActionSelector from "@/components/ConnectionLostActionSelector.vue";
 import ReadDmMotor from "@/components/message-types/ReadDmMotor.vue";
 import ReadSBUSRC from "@/components/message-types/ReadSBUSRC.vue";
@@ -897,6 +903,7 @@ import ModuleAddButtons from "@/components/module-settings/ModuleAddButtons.vue"
 export default {
   name: 'ModuleSettings',
   components: {
+    ImportConfigDialog,
     ModuleAddButtons,
     ReadCANPMU,
     WriteLkMotorSingleRoundPositionControlWithSpeedLimit,
@@ -1131,6 +1138,7 @@ export default {
         },
       },
       modules: [],
+      showImportDialog: false,
     }
   },
   watch: {
@@ -1230,6 +1238,10 @@ export default {
         }
       })
       return targetObj
+    },
+    handleImport(importedModules) {
+      this.modules = importedModules;
+      this.showImportDialog = false;
     }
   }
 }
